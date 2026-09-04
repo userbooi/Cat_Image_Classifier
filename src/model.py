@@ -1,9 +1,9 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Layer
 from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Dense, GlobalAveragePool2D, RandomFlip, RandomRotation, \
-    RandomZoom, RandomContrast, Dropout
-from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import Input, Conv2D, MaxPool2D, Dense, GlobalAveragePooling2D, RandomFlip, \
+    RandomRotation, RandomZoom, RandomContrast, Dropout
+from tensorflow.keras.applications import MobileNetV2, mobilenet_v2
 from tensorflow.keras import Model
 
 # create the data augmenter that returns a sequential model to augment the existing dataset to create more images
@@ -19,7 +19,7 @@ def data_augmenter():
 
 # create a function to get the preprocessing used my mobile net
 def preprocessor():
-    return MobileNetV2.preprocess_input
+    return mobilenet_v2.preprocess_input
 
 # create the cat classifier
 def cat_classifier_model(img_size, data_augmentation=data_augmenter(), preprocessing=preprocessor()):
@@ -36,20 +36,20 @@ def cat_classifier_model(img_size, data_augmentation=data_augmenter(), preproces
     mobile_net.trainable = False
 
     # augment the data and preprocess
-    X = data_augmentation(X)
+    X_augmented = data_augmentation(X)
     # preprocess the data
-    X = preprocessing(X)
+    X_preprocessed = preprocessing(X_augmented)
 
     # pass it through the trained mobile net
     # set it to inference mode so the batch norm works fine
-    X = mobile_net(X, training=False)
+    X_inter = mobile_net(X_preprocessed, training=False)
 
     # create the new top layers to complete the transfer learning
-    X = GlobalAveragePool2D()(X)
-    X = Dense(128, activation='relu')(X)
-    X = Dropout(0.2)(X)
+    X_inter = GlobalAveragePooling2D()(X_inter)
+    X_inter = Dense(128, activation='relu')(X_inter)
+    X_inter = Dropout(0.2)(X_inter)
     # only use linear to use from_logits later
-    output = Dense(1, activation='linear')(X)
+    output = Dense(1, activation='linear')(X_inter)
 
     model = Model(inputs=X, outputs=output)
 

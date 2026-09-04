@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.utils import image_dataset_from_directory
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.losses import BinaryCrossentropy
+from pprint import pprint
 
 import matplotlib.pyplot as plt
 
@@ -58,5 +59,14 @@ model.compile(
 )
 history = model.fit(training_set, epochs=5, validation_data=dev_set)
 
+# print out the history
+pprint(history.history)
 
+'''
+save the weights
 
+Training accuracy - 98%
+dev accuracy - 96%
+'''
+model.save(MODEL_PATH)
+model.save_weights(WEIGHT_PATH)
