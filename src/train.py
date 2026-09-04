@@ -68,5 +68,5 @@ save the weights
 Training accuracy - 98%
 dev accuracy - 96%
 '''
-model.save(MODEL_PATH)
-model.save_weights(WEIGHT_PATH)
+# model.save(MODEL_PATH)
+# model.save_weights(WEIGHT_PATH)
