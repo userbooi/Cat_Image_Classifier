@@ -2,7 +2,12 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.utils import image_dataset_from_directory
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.losses import BinaryCrossentropy
+
 import matplotlib.pyplot as plt
+
+from model import cat_classifier_model
 
 # the size that the MobileNetV2 trained on ImageNet used
 IMAGE_SIZE = (224, 224)
@@ -41,6 +46,17 @@ dev_set = image_dataset_from_directory(dataset_path,
 #         plt.axis("off")
 #
 #     plt.show()
+
+MODEL_PATH = "../models/cat_image_classifier.keras"
+WEIGHT_PATH = "../models/weights/cat_image_classifier.weights.h5"
+model = cat_classifier_model(IMAGE_SIZE)
+# transfer learning stage
+model.compile(
+    optimizer=Adam(learning_rate=1e-3),
+    loss=BinaryCrossentropy(from_logits=True),
+    metrics=['accuracy']
+)
+history = model.fit(training_set, epochs=5, validation_data=dev_set)
 
 
 
